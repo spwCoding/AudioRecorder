@@ -1,0 +1,63 @@
+apply plugin: 'com.android.application'
+
+String pid="1003"
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+
+
+    defaultConfig { applicationId "spw.audiorecorder"
+        minSdkVersion 14
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable false
+            zipAlignEnabled true
+        }
+        debug {
+            minifyEnabled false
+            debuggable true
+            jniDebuggable true
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+        ignoreWarnings true
+    }
+
+    productFlavors {
+        A_001{}
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def oldFile = output.outputFile
+            if (variant.buildType.name.equals('release')) {
+                println(variant.productFlavors[0].name)
+                def releaseApkName = 'X'+ pid +'A_' + defaultConfig.versionCode + '_' + variant.productFlavors[0].name + '.apk'
+                output.outputFile = new File(oldFile.parent, releaseApkName)
+            }
+            if (variant.buildType.name.equals('beta')) {
+                newName = oldFile.name.replace(".apk", "-v-build.apk")
+                output.outputFile = new File(oldFile.parent, newName)
+            }
+        }
+    }
+
+
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile project(':audiorecordlib')
+    compile 'com.android.support:cardview-v7:22.2.1'
+}
